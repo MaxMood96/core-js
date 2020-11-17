@@ -1527,9 +1527,6 @@ const data = {
   },
   'esnext.map.update': {
   },
-  // TODO: Remove from `core-js@4`
-  'esnext.map.update-or-insert': {
-  },
   'esnext.map.upsert': {
   },
   'esnext.math.clamp': {
