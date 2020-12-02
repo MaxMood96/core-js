@@ -454,9 +454,6 @@ GLOBAL.tests = {
   'es.date.get-year': function () {
     return Date.prototype.getYear;
   },
-  'es.date.now': function () {
-    return Date.now;
-  },
   'es.date.set-year': function () {
     return Date.prototype.setYear;
   },
