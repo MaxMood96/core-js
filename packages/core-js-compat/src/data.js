@@ -1492,8 +1492,6 @@ const data = {
   },
   'esnext.math.scale': {
   },
-  'esnext.math.seeded-prng': {
-  },
   'esnext.math.signbit': {
   },
   'esnext.number.from-string': {
