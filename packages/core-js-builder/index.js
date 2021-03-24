@@ -4,6 +4,7 @@ const { dirname, join } = require('path');
 const { promisify } = require('util');
 const tmpdir = require('os').tmpdir();
 const webpack = promisify(require('webpack'));
+const { minify: terser } = require('terser');
 const compat = require('@core-js/compat/compat');
 const modulesList = require('@core-js/compat/modules');
 const { banner } = require('./config');
@@ -22,6 +23,7 @@ module.exports = async function ({
   exclude = [],
   modules = modulesList.slice(),
   targets,
+  minify = true,
   filename,
   summary = {},
 } = {}) {
@@ -81,22 +83,26 @@ module.exports = async function ({
     } }();`;
   }
 
-  if (summary.comment.size) script += `/*\n * size: ${ (code.length / 1024).toFixed(2) }KB w/o comments\n */`;
-  if (summary.comment.modules) script += `/*\n * modules list:\n${ modules.map(it => ` * ${ it }\n`).join('') } */`;
-  if (code) script += `\n${ code }`;
+  if (minify) {
+    const { code } = await terser(script, {
+      ecma: 5,
+      keep_fnames: true,
+      compress: {
+        hoist_funs: false,
+        hoist_vars: true,
+        pure_getters: true,
+        passes: 3,
+        unsafe_proto: true,
+        unsafe_undefined: true,
+      },
+      format: {
+        max_line_len: 32000,
+        preamble: banner,
+        webkit: false,
+      },
+    });
 
-  if (summary.console.size) {
-    // eslint-disable-next-line no-console -- output
-    console.log(`\u001B[32mbundling \u001B[36m${ TITLE }\u001B[32m, size: \u001B[36m${
-      (script.length / 1024).toFixed(2)
-    }KB\u001B[0m`);
-  }
-
-  if (summary.console.modules) {
-    // eslint-disable-next-line no-console -- output
-    console.log(`\u001B[32mbundling \u001B[36m${ TITLE }\u001B[32m, modules:\u001B[0m`);
-    // eslint-disable-next-line no-console -- output
-    console.log(JSON.stringify(modulesWithTargets || modules, null, '  '));
+    script = code;
   }
 
   if (typeof filename != 'undefined') {
