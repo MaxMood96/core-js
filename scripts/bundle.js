@@ -1,28 +1,15 @@
 'use strict';
-const { cyan, green } = require('chalk');
 const builder = require('@core-js/builder');
 const actual = require('@core-js/compat/entries')['core-js/actual'];
 
 const DENO = process.argv.includes('--deno');
 
-const PATH = DENO ? './deno/corejs/' : './packages/core-js-bundle/';
-
-function log(kind, name, code) {
-  const size = (code.length / 1024).toFixed(2);
-  // eslint-disable-next-line no-console -- output
-  console.log(green(`${ kind }: ${ cyan(`${ PATH }${ name }.js`) }, size: ${ cyan(`${ size }KB`) }`));
-}
-
-async function bundle({ name, min, ...options }) {
-  const source = await builder({ filename: `${ PATH }${ name }.js`, ...options });
-  log('bundling', name, source);
-}
-
 if (DENO) {
-  bundle({ name: 'index', targets: { deno: '1.0' }, minify: false });
+  builder({ filename: './deno/corejs/full.js', targets: { deno: '1.0' }, minify: false, summary: { size: true } });
 } else {
-  bundle({ name: 'full', minify: false });
-  bundle({ name: 'full.min' });
-  bundle({ name: 'actual', modules: actual, minify: false });
-  bundle({ name: 'actual.min', modules: actual });
+  const PATH = './packages/core-js-bundle/';
+  builder({ filename: `${ PATH }full.js`, minify: false, summary: { size: true } });
+  builder({ filename: `${ PATH }full.min.js`, summary: { size: true } });
+  builder({ filename: `${ PATH }actual.js`, modules: actual, minify: false, summary: { size: true } });
+  builder({ filename: `${ PATH }actual.min.js`, modules: actual, summary: { size: true } });
 }
