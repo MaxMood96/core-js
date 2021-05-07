@@ -85,7 +85,6 @@ const data = {
     safari: '10.0',
     rhino: '1.7.13',
   },
-  // TODO: confirm
   'es.symbol.to-primitive': {
     chrome: '47',
     edge: '15',
@@ -93,7 +92,6 @@ const data = {
     safari: '10.0',
     rhino: '1.7.13',
   },
-  // TODO: confirm
   'es.symbol.to-string-tag': {
     chrome: '49',
     edge: '15',
@@ -795,7 +793,6 @@ const data = {
     firefox: '69',
     safari: '11.0',
   },
-  // TODO: confirm
   'es.promise.all': {
     chrome: '67',
     firefox: '69',
@@ -825,7 +822,6 @@ const data = {
     ios: '13.2.3', // need to clarify the patch release, >13.0.0 && <= 13.2.3
     safari: '13.0.3', // need to clarify the patch release, >13.0.0 && <= 13.0.3
   },
-  // TODO: confirm
   'es.promise.race': {
     chrome: '67',
     firefox: '69',
