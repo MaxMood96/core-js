@@ -96,6 +96,7 @@ const data = {
     safari: '10.0',
     rhino: '1.7.13',
   },
+  // TODO: confirm
   'es.symbol.to-string-tag': {
     chrome: '49',
     edge: '15',
