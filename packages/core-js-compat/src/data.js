@@ -106,7 +106,7 @@ const data = {
     safari: '9.0',
     rhino: '1.7.13',
   },
-  'es.aggregate-error': {
+  'es.aggregate-error.constructor': {
     chrome: '85',
     firefox: '79',
     safari: '14.0',
