@@ -308,7 +308,7 @@ const data = {
     safari: '12.1',
     rhino: '1.7.13',
   },
-  'es.data-view': {
+  'es.data-view.constructor': {
     chrome: '26',
     firefox: '15',
     ie: '10',
