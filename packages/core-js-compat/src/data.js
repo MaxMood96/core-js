@@ -1696,6 +1696,7 @@ const data = {
     node: '0.0.1',
     opera: '7',
     safari: '1.0',
+    rhino: '1.7.13',
   },
   'web.set-timeout': {
     android: '1.5',
