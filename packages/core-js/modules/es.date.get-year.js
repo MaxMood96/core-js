@@ -8,5 +8,5 @@ var getFullYear = Date.prototype.getFullYear;
 $({ target: 'Date', proto: true }, {
   getYear: function getYear() {
     return getFullYear.call(this) - 1900;
-  }
+  },
 });
