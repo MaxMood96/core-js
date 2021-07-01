@@ -10,7 +10,7 @@ const {
   ChromeToSamsung,
   ChromeToOperaMobile,
   SafariToIOS,
-} = require('core-js-compat/src/mapping');
+} = require('../packages/core-js-compat/src/mapping');
 
 let updated = true;
 
