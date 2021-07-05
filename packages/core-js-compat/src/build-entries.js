@@ -2,7 +2,7 @@
 const { readFileSync, writeFileSync } = require('fs');
 const { dirname, resolve } = require('path');
 const { green } = require('chalk');
-const detective = require('detective');
+const konan = require('konan');
 const { sync: glob } = require('glob');
 const { intersection, sortObjectByKey } = require('../helpers');
 const modules = require('../modules');
@@ -14,7 +14,7 @@ function getModulesForEntryPoint(entry) {
   const result = [];
   const dir = dirname(name);
   const file = readFileSync(name);
-  const dependencies = detective(file);
+  const dependencies = konan(String(file)).strings;
   for (const dependency of dependencies) {
     const relative = resolve(dir, dependency);
     result.push(...getModulesForEntryPoint(relative));
