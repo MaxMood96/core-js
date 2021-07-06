@@ -85,7 +85,7 @@ module.exports = async function ({
       mode: 'none',
       node: false,
       target: ['node', 'es5'],
-      entry: modules.map(it => require.resolve(`core-js/modules/${ it }`)),
+      entry: modules.map(it => require.resolve(`core-js/commonjs/modules/${ it }`)),
       output: {
         path: tmpdir,
         filename: tempFileName,

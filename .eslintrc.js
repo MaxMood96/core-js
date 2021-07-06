@@ -583,6 +583,14 @@ const base = {
 };
 
 const es5 = {
+  // trailing commas
+  'comma-dangle': ['error', {
+    arrays: 'always-multiline',
+    objects: 'always-multiline',
+    imports: 'never',
+    exports: 'never',
+    functions: 'never',
+  }],
   // disallow adding to native types
   'no-extend-native': 'off',
   // disallow function or variable declarations in nested blocks
@@ -763,8 +771,6 @@ const transpiledAndPolyfilled = {
 };
 
 const node = {
-  // disallow unsupported ECMAScript syntax on the specified version
-  'node/no-unsupported-features/es-syntax': ['error', { version: SUPPORTED_NODE_VERSIONS }],
   // disallow unsupported ECMAScript built-ins on the specified version
   'node/no-unsupported-features/node-builtins': ['error', { version: SUPPORTED_NODE_VERSIONS }],
   ...disable(forbidES5BuiltIns),
@@ -957,7 +963,7 @@ module.exports = {
         'tests/worker/**',
       ],
       parserOptions: {
-        ecmaVersion: 5,
+        sourceType: 'module',
       },
       rules: es5,
     },

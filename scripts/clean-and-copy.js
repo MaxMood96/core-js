@@ -26,6 +26,7 @@ async function copy(from, to, { force = false } = {}) {
   // it's available only from Node 14.14, but this step required only for development where we use modern Node
   if (rm) {
     await rm('./packages/core-js/bundle', { force: true, recursive: true });
+    await rm('./packages/core-js/commonjs', { force: true, recursive: true });
 
     await Promise.all((await readdir('./packages/core-js-pure'))
       .filter(entry => !['override', '.npmignore', 'package.json', 'README.md'].includes(entry))
