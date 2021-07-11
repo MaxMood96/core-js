@@ -20,24 +20,16 @@ function normalizeSummary(unit = {}) {
 }
 
 module.exports = async function ({
-  exclude = [],
   modules = modulesList.slice(),
+  exclude = [],
   targets,
   minify = true,
   filename,
-  addModulesList = false,
   summary = {},
 } = {}) {
+  summary = { comment: normalizeSummary(summary.comment), console: normalizeSummary(summary.console) };
+
   const TITLE = filename != null ? filename : '`core-js`';
-
-  let summarySize, summaryModules, modulesWithTargets;
-  if (typeof summary !== 'object') {
-    summarySize = summaryModules = !!summary;
-  } else {
-    summarySize = !!summary.size;
-    summaryModules = !!summary.modules;
-  }
-
   const set = new Set();
   let script = banner;
   let code = '';
@@ -66,18 +58,7 @@ module.exports = async function ({
     modulesWithTargets = compatResult.targets;
   }
 
-  if (summaryModules) {
-    // eslint-disable-next-line no-console -- output
-    console.log(`\u001B[36m${ TITLE }\u001B[32m bundle modules:\u001B[0m`);
-    // eslint-disable-next-line no-console -- output
-    console.table(modulesWithTargets || modules);
-  }
-
-  let script = banner;
-
   if (modules.length) {
-    if (addModulesList) script += `/*\n${ modules.map(it => ` * ${ it }\n`).join('') } */`;
-
     const tempFileName = `core-js-${ Math.random().toString(36).slice(2) }.js`;
     const tempFile = join(tmpdir, tempFileName);
 
@@ -96,7 +77,7 @@ module.exports = async function ({
 
     await unlink(tempFile);
 
-    let code = `!function (undefined) { 'use strict'; ${
+    code = `!function (undefined) { 'use strict'; ${
       // compress `__webpack_require__` with `keep_fnames` option
       String(file).replace(/function __webpack_require__/, 'var __webpack_require__ = function ')
     } }();`;
@@ -119,15 +100,24 @@ module.exports = async function ({
         },
       }));
     }
-
-    script += `\n${ code }`;
   }
 
-  if (summarySize) {
+  if (summary.comment.size) script += `/*\n * size: ${ (code.length / 1024).toFixed(2) }KB w/o comments\n */`;
+  if (summary.comment.modules) script += `/*\n * modules list:\n${ modules.map(it => ` * ${ it }\n`).join('') } */`;
+  if (code) script += `\n${ code }`;
+
+  if (summary.console.size) {
     // eslint-disable-next-line no-console -- output
     console.log(`\u001B[32mbundling: \u001B[36m${ TITLE }\u001B[32m, size: \u001B[36m${
       (script.length / 1024).toFixed(2)
     }KB\u001B[0m`);
+  }
+
+  if (summary.console.modules) {
+    // eslint-disable-next-line no-console -- output
+    console.log(`\u001B[36m${ TITLE }\u001B[32m bundled modules:\u001B[0m`);
+    // eslint-disable-next-line no-console -- output
+    console.table(modulesWithTargets || modules);
   }
 
   if (typeof filename != 'undefined') {
