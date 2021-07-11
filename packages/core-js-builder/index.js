@@ -103,19 +103,19 @@ module.exports = async function ({
   }
 
   if (summary.comment.size) script += `/*\n * size: ${ (code.length / 1024).toFixed(2) }KB w/o comments\n */`;
-  if (summary.comment.modules) script += `/*\n * modules list:\n${ modules.map(it => ` * ${ it }\n`).join('') } */`;
+  if (summary.comment.modules) script += `/*\n * modules:\n${ modules.map(it => ` * ${ it }\n`).join('') } */`;
   if (code) script += `\n${ code }`;
 
   if (summary.console.size) {
     // eslint-disable-next-line no-console -- output
-    console.log(`\u001B[32mbundling: \u001B[36m${ TITLE }\u001B[32m, size: \u001B[36m${
+    console.log(`\u001B[32mbundling \u001B[36m${ TITLE }\u001B[32m, size: \u001B[36m${
       (script.length / 1024).toFixed(2)
     }KB\u001B[0m`);
   }
 
   if (summary.console.modules) {
     // eslint-disable-next-line no-console -- output
-    console.log(`\u001B[36m${ TITLE }\u001B[32m bundled modules:\u001B[0m`);
+    console.log(`\u001B[32mbundling \u001B[36m${ TITLE }\u001B[32m, modules:\u001B[0m`);
     // eslint-disable-next-line no-console -- output
     console.table(modulesWithTargets || modules);
   }
