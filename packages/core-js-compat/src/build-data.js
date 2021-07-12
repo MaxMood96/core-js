@@ -1,5 +1,5 @@
 'use strict';
-const { writeFileSync } = require('fs');
+const { mkdir, writeFile } = require('fs/promises');
 const { resolve } = require('path');
 const { green } = require('chalk');
 const { compare, sortObjectByKey, semver } = require('../helpers');
@@ -71,12 +71,16 @@ for (const scope of [data, external]) {
 }
 
 function writeJSON(filename, content) {
-  writeFileSync(resolve(__dirname, filename), JSON.stringify(content, null, '  '));
+  return writeFile(resolve(__dirname, filename), JSON.stringify(content, null, '  '));
 }
 
-writeJSON('../data.json', data);
-writeJSON('../modules.json', Object.keys(data));
-writeJSON('../external.json', external);
-
-// eslint-disable-next-line no-console -- output
-console.log(green('compat data rebuilt'));
+(async () => {
+  await mkdir(resolve(__dirname, '../data/'), { recursive: true });
+  await Promise.all([
+    writeJSON('../data/data.json', data),
+    writeJSON('../data/modules.json', Object.keys(data)),
+    writeJSON('../data/external.json', external),
+  ]);
+  // eslint-disable-next-line no-console -- output
+  console.log(green('compat data rebuilt'));
+})();
