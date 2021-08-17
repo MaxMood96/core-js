@@ -1,0 +1,14 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.21.5
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:debug:20170905':
+    - promises-aplus-tests > mocha > debug:
+        patched: '2021-08-17T01:06:49.926Z'
+  'npm:minimatch:20160620':
+    - promises-aplus-tests > mocha > glob > minimatch:
+        patched: '2021-08-17T01:06:49.926Z'
+  'npm:ms:20170412':
+    - promises-aplus-tests > mocha > debug > ms:
+        patched: '2021-08-17T01:06:49.926Z'
