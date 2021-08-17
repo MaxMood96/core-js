@@ -118,6 +118,12 @@
     "usage-10000": "zx scripts/usage.mjs -l=10000",
     "outdated": "zx scripts/check-dependencies.mjs",
     "update-version": "zx scripts/update-version.mjs && node scripts/bundle --deno",
-    "publish": "lerna publish from-package --yes"
+    "publish": "lerna publish from-package --yes",
+    "prepublish": "npm run snyk-protect",
+    "snyk-protect": "snyk-protect"
+  },
+  "snyk": true,
+  "dependencies": {
+    "@snyk/protect": "latest"
   }
 }
