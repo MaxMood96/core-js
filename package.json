@@ -24,7 +24,7 @@
     "@babel/plugin-transform-spread": "^7.16.7",
     "@babel/plugin-transform-template-literals": "^7.16.7",
     "@onslip/karma-playwright-launcher": "^0.2.1",
-    "babel-loader": "^8.2.4",
+    "babel-loader": "^9.1.3",
     "babel-plugin-transform-es2015-modules-simple-commonjs": "~0.3.0",
     "babel-plugin-transform-for-of-as-array": "^1.1.1",
     "confusing-browser-globals": "^1.0.11",
