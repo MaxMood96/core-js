@@ -10,9 +10,9 @@
   "main": "index.js",
   "dependencies": {
     "core-js": "3.21.1",
-    "core-js-compat": "3.21.1",
+    "core-js-compat": "3.25.1",
     "mkdirp": ">=0.5.5 <1",
-    "webpack": ">=4.46.0 <5"
+    "webpack": ">=5.0.0"
   },
   "engines": {
     "node": ">=8.9.0"
