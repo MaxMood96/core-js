@@ -52,7 +52,7 @@
     "karma-phantomjs-launcher": "~1.0.4",
     "karma-qunit": "^4.1.2",
     "konan": "^2.1.1",
-    "lerna": "^4.0.0",
+    "lerna": "^6.5.0",
     "moon-unit": "0.2.2",
     "node-qunit": "^2.0.0",
     "npm": "8.5.5",
@@ -67,7 +67,7 @@
     "terser": "^5.12.1",
     "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2",
-    "zx": "^6.0.7"
+    "zx": "^8.0.0"
   },
   "license": "MIT",
   "repository": {
