@@ -52,7 +52,7 @@
     "karma-phantomjs-launcher": "~1.0.4",
     "karma-qunit": "^4.1.2",
     "konan": "^2.1.1",
-    "lerna": "^4.0.0",
+    "lerna": "^8.1.5",
     "moon-unit": "0.2.2",
     "node-qunit": "^2.0.0",
     "npm": "8.5.5",
