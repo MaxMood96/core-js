@@ -1,10 +1,16 @@
-import { DESCRIPTORS } from './constants';
+import { DESCRIPTORS } from './constants.js';
 import assign from 'core-js-pure/es/object/assign';
+import defineProperties from 'core-js-pure/es/object/define-properties';
 import isIterable from 'core-js-pure/es/is-iterable';
 import ASYNC_ITERATOR from 'core-js-pure/es/symbol/async-iterator';
-import { is, arrayFromArrayLike } from './helpers';
+import { is, arrayFromArrayLike } from './helpers.js';
 
-const { toString, propertyIsEnumerable } = Object.prototype.propertyIsEnumerable;
+// for Babel template transform
+if (!Object.freeze) Object.freeze = Object;
+if (!DESCRIPTORS) Object.defineProperties = defineProperties;
+
+const { getOwnPropertyDescriptor } = Object;
+const { toString, propertyIsEnumerable } = Object.prototype;
 
 assign(QUnit.assert, {
   arity(fn, length, message) {
@@ -16,6 +22,18 @@ assign(QUnit.assert, {
   avoid(message = 'It should never be called') {
     this.ok(false, message);
   },
+  // TODO: Drop from future `core-js` versions
+  // available from `qunit@2.21`
+  closeTo(actual, expected, delta, message) {
+    if (typeof delta != 'number') throw new TypeError('closeTo() requires a delta argument');
+    const result = Math.abs(actual - expected) <= delta;
+    this.pushResult({
+      result,
+      actual,
+      expected,
+      message: message ?? `The value should be within ${ delta } inclusive`,
+    });
+  },
   enumerable(O, key, message) {
     const result = !DESCRIPTORS || propertyIsEnumerable.call(O, key);
     this.pushResult({
@@ -23,20 +41,12 @@ assign(QUnit.assert, {
       actual: result,
       expected: 'The property should be enumerable',
       message: DESCRIPTORS
-        ? 'Enumerability is not applicable'
-        : message ?? `${ typeof key == 'symbol' ? 'property' : `'${ key }'` } is enumerable`,
+        ? message ?? `${ typeof key == 'symbol' ? 'property' : `'${ key }'` } is enumerable`
+        : 'Enumerability is not applicable',
     });
   },
-  epsilon(a, b, EPSILON = 1e-11, message) {
-    const result = Math.abs(a - b) <= EPSILON;
-    this.pushResult({
-      result,
-      actual: result,
-      expected: `The value should be closer to the target by less than ${ EPSILON }`,
-      message: message ?? `The value should be closer to the target by less than ${ EPSILON }`,
-    });
-  },
-  // unavailable in `qunit@1` that's required for testing in IE8-
+  // TODO: Drop from future `core-js` versions
+  // unavailable in `qunit@1` that's required for testing in IE9-, Chrome 38, etc.
   false(value, message = 'The value is `false`') {
     this.same(value, false, message);
   },
@@ -77,7 +87,7 @@ assign(QUnit.assert, {
     this.pushResult({
       result: /native code/.test(source),
       actual: source,
-      expected: 'The function should looks like a native',
+      expected: 'The function should look like a native',
       message,
     });
   },
@@ -93,6 +103,17 @@ assign(QUnit.assert, {
         : 'Function#name property test makes no sense',
     });
   },
+  nonConfigurable(O, key, message) {
+    const result = !DESCRIPTORS || !getOwnPropertyDescriptor(O, key)?.configurable;
+    this.pushResult({
+      result,
+      actual: result,
+      expected: 'The property should be non-configurable',
+      message: DESCRIPTORS
+        ? message ?? `${ typeof key == 'symbol' ? 'property' : `'${ key }'` } is non-configurable`
+        : 'Configurability is not applicable',
+    });
+  },
   nonEnumerable(O, key, message) {
     const result = !DESCRIPTORS || !propertyIsEnumerable.call(O, key);
     this.pushResult({
@@ -100,8 +121,19 @@ assign(QUnit.assert, {
       actual: result,
       expected: 'The property should be non-enumerable',
       message: DESCRIPTORS
-        ? 'Enumerability is not applicable'
-        : message ?? `${ typeof key == 'symbol' ? 'property' : `'${ key }'` } is non-enumerable`,
+        ? message ?? `${ typeof key == 'symbol' ? 'property' : `'${ key }'` } is non-enumerable`
+        : 'Enumerability is not applicable',
+    });
+  },
+  nonWritable(O, key, message) {
+    const result = !DESCRIPTORS || !getOwnPropertyDescriptor(O, key)?.writable;
+    this.pushResult({
+      result,
+      actual: result,
+      expected: 'The property should be non-writable',
+      message: DESCRIPTORS
+        ? message ?? `${ typeof key == 'symbol' ? 'property' : `'${ key }'` } is non-writable`
+        : 'Writability is not applicable',
     });
   },
   notSame(actual, expected, message) {
@@ -139,7 +171,8 @@ assign(QUnit.assert, {
       message,
     });
   },
-  // unavailable in `qunit@1` that's required for testing in IE8-
+  // TODO: Drop from future `core-js` versions
+  // unavailable in `qunit@1` that's required for testing in IE9-, Chrome 38, etc.
   true(value, message = 'The value is `true`') {
     this.same(value, true, message);
   },

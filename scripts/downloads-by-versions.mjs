@@ -1,37 +1,43 @@
-import coerce from 'semver/functions/coerce.js';
+import semver from 'semver';
 
-async function getStat(pkg) {
-  const res = await fetch(`https://www.npmjs.com/package/${ pkg }`);
-  const html = await res.text();
-  const [, json] = html.match(/>window\.__context__ = ([^<]+)<\//);
-  return JSON.parse(json).context.versionsDownloads;
-}
-
+const { coerce, cmp } = semver;
 const { cyan, green } = chalk;
-const ALL = !argv['main-only'];
-const core = await getStat('core-js');
-const pure = ALL && await getStat('core-js-pure');
-const bundle = ALL && await getStat('core-js-bundle');
+const ALL = !argv._.includes('main-only');
 const downloadsByPatch = {};
 const downloadsByMinor = {};
 const downloadsByMajor = {};
 let total = 0;
 
+async function getStat(pkg) {
+  const res = await fetch(`https://api.npmjs.org/versions/${ encodeURIComponent(pkg) }/last-week`);
+  const { downloads } = await res.json();
+  return downloads;
+}
+
+const [core, pure, bundle] = await Promise.all([
+  getStat('core-js'),
+  // eslint-disable-next-line unicorn/prefer-top-level-await -- false positive
+  ALL && getStat('core-js-pure'),
+  // eslint-disable-next-line unicorn/prefer-top-level-await -- false positive
+  ALL && getStat('core-js-bundle'),
+]);
+
 for (let [patch, downloads] of Object.entries(core)) {
-  const semver = coerce(patch);
-  const { major } = semver;
-  const minor = `${ major }.${ semver.minor }`;
-  if (ALL) downloads += (pure[patch] || 0) + (bundle[patch] || 0);
+  const version = coerce(patch);
+  const { major } = version;
+  const minor = `${ major }.${ version.minor }`;
+  if (ALL) downloads += (pure[patch] ?? 0) + (bundle[patch] ?? 0);
   downloadsByPatch[patch] = downloads;
-  downloadsByMinor[minor] = (downloadsByMinor[minor] || 0) + downloads;
-  downloadsByMajor[major] = (downloadsByMajor[major] || 0) + downloads;
+  downloadsByMinor[minor] = (downloadsByMinor[minor] ?? 0) + downloads;
+  downloadsByMajor[major] = (downloadsByMajor[major] ?? 0) + downloads;
   total += downloads;
 }
 
 function log(kind, map) {
-  console.log(green(`downloads for 7 days by ${ cyan(kind) } releases:`));
-  console.table(Object.keys(map).sort().reduce((memo, version) => {
-    const downloads = map[version];
+  echo(green(`downloads for 7 days by ${ cyan(kind) } releases:`));
+  console.table(Object.entries(map).sort(([a], [b]) => {
+    return cmp(coerce(a), '>', coerce(b)) ? 1 : -1;
+  }).reduce((memo, [version, downloads]) => {
     memo[version] = { downloads, '%': `${ (downloads / total * 100).toFixed(2).padStart(5) } %` };
     return memo;
   }, {}));

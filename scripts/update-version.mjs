@@ -1,26 +1,29 @@
-const PREV_VERSION = require('core-js/package').version;
-const NEW_VERSION = require('../package').version;
-
 const { readdir, readJson, readFile, writeJson, writeFile } = fs;
-const now = new Date();
-const NEW_VERSION_MINOR = NEW_VERSION.replace(/^(\d+\.\d+)\..*/, '$1');
-const PREV_VERSION_MINOR = PREV_VERSION.replace(/^(\d+\.\d+)\..*/, '$1');
+const { green, red } = chalk;
+const [PREV_VERSION, NEW_VERSION] = (await Promise.all([
+  readJson('packages/core-js/package.json'),
+  readJson('package.json'),
+])).map(it => it.version);
+
+function getMinorVersion(version) {
+  return version.match(/^(?<minor>\d+\.\d+)\..*/).groups.minor;
+}
+
+const PREV_VERSION_MINOR = getMinorVersion(PREV_VERSION);
+const NEW_VERSION_MINOR = getMinorVersion(NEW_VERSION);
 const CHANGELOG = 'CHANGELOG.md';
 const LICENSE = 'LICENSE';
 const README = 'README.md';
 const README_COMPAT = 'packages/core-js-compat/README.md';
 const README_DENO = 'deno/corejs/README.md';
-const LERNA = 'lerna.json';
-const SHARED = 'packages/core-js/internals/shared.js';
+const SHARED = 'packages/core-js/internals/shared-store.js';
 const BUILDER_CONFIG = 'packages/core-js-builder/config.js';
-const CURRENT_YEAR = now.getFullYear();
+const NOW = new Date();
+const CURRENT_YEAR = NOW.getFullYear();
 
 const license = await readFile(LICENSE, 'utf8');
-const OLD_YEAR = +license.match(/2014-(\d{4}) D/)[1];
+const OLD_YEAR = +license.match(/2014-(?<year>\d{4}) D/).groups.year;
 await writeFile(LICENSE, license.replaceAll(OLD_YEAR, CURRENT_YEAR));
-
-const lerna = await readFile(LERNA, 'utf8');
-await writeFile(LERNA, lerna.replaceAll(PREV_VERSION, NEW_VERSION));
 
 const readme = await readFile(README, 'utf8');
 await writeFile(README, readme.replaceAll(PREV_VERSION, NEW_VERSION).replaceAll(PREV_VERSION_MINOR, NEW_VERSION_MINOR));
@@ -38,7 +41,7 @@ const builderConfig = await readFile(BUILDER_CONFIG, 'utf8');
 await writeFile(BUILDER_CONFIG, builderConfig.replaceAll(OLD_YEAR, CURRENT_YEAR));
 
 const packages = await readdir('packages');
-for (const PATH of await globby('packages/*/package.json')) {
+for (const PATH of await glob('packages/*/package.json')) {
   const pkg = await readJson(PATH, 'utf8');
   pkg.version = NEW_VERSION;
   for (const field of ['dependencies', 'devDependencies']) {
@@ -51,13 +54,19 @@ for (const PATH of await globby('packages/*/package.json')) {
 
 if (NEW_VERSION !== PREV_VERSION) {
   const changelog = await readFile(CHANGELOG, 'utf8');
-  await writeFile(CHANGELOG, changelog.replaceAll('##### Unreleased', `##### Unreleased\n- Nothing\n\n##### ${
+  await writeFile(CHANGELOG, changelog.replaceAll('##### Unreleased', `##### Unreleased\n- Nothing\n\n##### [${
     NEW_VERSION
   } - ${
-    CURRENT_YEAR }.${ String(now.getMonth() + 1).padStart(2, '0') }.${ String(now.getDate()).padStart(2, '0')
-  }`));
+    CURRENT_YEAR }.${ String(NOW.getMonth() + 1).padStart(2, '0') }.${ String(NOW.getDate()).padStart(2, '0')
+  }](https://github.com/zloirock/core-js/releases/tag/v${
+    NEW_VERSION
+  })\n- Changes [v${ PREV_VERSION }...v${ NEW_VERSION }](https://github.com/zloirock/core-js/compare/v${ PREV_VERSION }...v${ NEW_VERSION })`));
 }
 
-if (CURRENT_YEAR !== OLD_YEAR) console.log(chalk.green('the year updated'));
-if (NEW_VERSION !== PREV_VERSION) console.log(chalk.green('the version updated'));
-else if (CURRENT_YEAR === OLD_YEAR) console.log(chalk.red('bump is not required'));
+if (CURRENT_YEAR !== OLD_YEAR) echo(green('the year updated'));
+if (NEW_VERSION !== PREV_VERSION) echo(green('the version updated'));
+else if (CURRENT_YEAR === OLD_YEAR) echo(red('bump is not required'));
+
+await $`npm run bundle-package deno`;
+await $`npm run build-compat`;
+await import('./copy-compat-table.mjs');
