@@ -1,5 +1,11 @@
 ## Changelog
 ##### Unreleased
+- Compat data improvements:
+  - `Iterator` helpers marked as fixed and updated following the latest spec changes in Safari 26.0
+  - `Set.prototype.{ difference, symmetricDifference, union }` marked as fixed in Safari 26.0
+
+##### [3.43.0 - 2025.06.09](https://github.com/zloirock/core-js/releases/tag/v3.43.0)
+- Changes [v3.42.0...v3.43.0](https://github.com/zloirock/core-js/compare/v3.42.0...v3.43.0) (139 commits)
 - [Explicit Resource Management proposals](https://github.com/tc39/proposal-explicit-resource-management):
   - Built-ins:
     - `Symbol.dispose`
@@ -66,6 +72,7 @@
 - Worked around a bug of many different tools ([example](https://github.com/zloirock/core-js/pull/1368#issuecomment-2908034690)) with incorrect transforming and breaking JS syntax on getting a method from a number literal
 - Fixed deoptimization of the `Promise` polyfill in the pure version
 - Added some missed dependencies to `/iterator/flat-map` entries
+- Some other minor fixes and improvements
 - Compat data improvements:
   - Added [Deno 2.3](https://github.com/denoland/deno/releases/tag/v2.3.0) and [Deno 2.3.2](https://github.com/denoland/deno/releases/tag/v2.3.2) compat data mapping
   - Updated Electron 37 compat data mapping
@@ -77,6 +84,7 @@
   - Iterators closing on early errors in `Iterator` helpers marked as implemented from FF141
   - `Array.prototype.with` marked as supported only from FF140 because it throws an incorrect exception when index coercion fails
   - `TypedArray.prototype.with` marked as unsupported in Bun and Safari because it should truncate negative fractional index to zero, but instead throws an error
+  - `DisposableStack` and `AsyncDisposableStack` marked as [shipped in FF141](https://bugzilla.mozilla.org/show_bug.cgi?id=1967744) (`SuppressedError` has [a bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1971000))
   - `AsyncDisposableStack` bugs marked as fixed in Deno 2.3.2
   - `SuppressedError` bugs ([extra arguments support](https://github.com/oven-sh/bun/issues/9283) and [arity](https://github.com/oven-sh/bun/issues/9282)) marked as fixed in Bun 1.2.15
 
