@@ -779,7 +779,8 @@ const base = {
   // strings and non-strings should not be added
   'sonarjs/no-incorrect-string-concat': ERROR,
   // `await` should only be used with promises
-  'sonarjs/no-invalid-await': ERROR,
+  // broken in eslint-plugin-sonarjs@3.0.3+
+  // 'sonarjs/no-invalid-await': ERROR,
   // function returns should not be invariant
   'sonarjs/no-invariant-returns': ERROR,
   // literals should not be used as functions
@@ -877,8 +878,7 @@ const base = {
   // enforce the use of `Math.SQRT2` instead of other ways
   'math/prefer-math-sqrt2': ERROR,
   // enforce the use of `Math.trunc()` instead of other truncations
-  // temporarily disabled because of https://github.com/ota-meshi/eslint-plugin-math/issues/92
-  'math/prefer-math-trunc': OFF,
+  'math/prefer-math-trunc': [ERROR, { reportBitwise: false }],
   // enforce the use of `Number.EPSILON` instead of other ways
   'math/prefer-number-epsilon': ERROR,
   // enforce the use of `Number.isFinite()` instead of other checking ways
@@ -1147,6 +1147,8 @@ const forbidNonStandardBuiltIns = {
   'es/no-nonstandard-array-prototype-properties': ERROR,
   'es/no-nonstandard-arraybuffer-properties': ERROR,
   'es/no-nonstandard-arraybuffer-prototype-properties': ERROR,
+  'es/no-nonstandard-asyncdisposablestack-properties': ERROR,
+  'es/no-nonstandard-asyncdisposablestack-prototype-properties': ERROR,
   'es/no-nonstandard-atomics-properties': ERROR,
   'es/no-nonstandard-bigint-properties': ERROR,
   'es/no-nonstandard-bigint-prototype-properties': ERROR,
@@ -1156,6 +1158,9 @@ const forbidNonStandardBuiltIns = {
   'es/no-nonstandard-dataview-prototype-properties': ERROR,
   'es/no-nonstandard-date-properties': ERROR,
   'es/no-nonstandard-date-prototype-properties': ERROR,
+  'es/no-nonstandard-disposablestack-properties': ERROR,
+  'es/no-nonstandard-disposablestack-prototype-properties': ERROR,
+  'es/no-nonstandard-error-properties': ERROR,
   'es/no-nonstandard-finalizationregistry-properties': ERROR,
   'es/no-nonstandard-finalizationregistry-prototype-properties': ERROR,
   'es/no-nonstandard-function-properties': ERROR,
@@ -1217,7 +1222,6 @@ const forbidCompletelyNonExistentBuiltIns = {
   ...forbidNonStandardBuiltIns,
   // disallow non-standard built-in methods
   'es/no-nonstandard-array-properties': [ERROR, { allow: [
-    'fromAsync',
     'isTemplateObject',
   ] }],
   'es/no-nonstandard-array-prototype-properties': [ERROR, { allow: [
@@ -1357,9 +1361,7 @@ const forbidCompletelyNonExistentBuiltIns = {
     'codePoints',
   ] }],
   'es/no-nonstandard-symbol-properties': [ERROR, { allow: [
-    'asyncDispose',
     'customMatcher',
-    'dispose',
     'isRegisteredSymbol',
     'isWellKnownSymbol',
     'metadata',
@@ -1658,6 +1660,13 @@ const forbidES2025BuiltIns = {
   'es/no-set-prototype-union': ERROR,
 };
 
+const forbidES2026BuiltIns = {
+  'es/no-array-fromasync': ERROR,
+  'es/no-asyncdisposablestack': ERROR,
+  'es/no-error-iserror': ERROR,
+  'es/no-suppressederror': ERROR,
+};
+
 const forbidES2016IntlBuiltIns = {
   'es/no-intl-getcanonicallocales': ERROR,
 };
@@ -1720,6 +1729,7 @@ const forbidModernBuiltIns = {
   ...forbidES2023BuiltIns,
   ...forbidES2024BuiltIns,
   ...forbidES2025BuiltIns,
+  ...forbidES2026BuiltIns,
   ...forbidES2016IntlBuiltIns,
   ...forbidES2017IntlBuiltIns,
   ...forbidES2018IntlBuiltIns,
@@ -1820,6 +1830,7 @@ const nodePackages = {
   ...forbidES2023BuiltIns,
   ...forbidES2024BuiltIns,
   ...forbidES2025BuiltIns,
+  ...forbidES2026BuiltIns,
   ...disable(forbidES2016IntlBuiltIns),
   ...disable(forbidES2017IntlBuiltIns),
   ...forbidES2018IntlBuiltIns,
@@ -1839,6 +1850,7 @@ const nodeDev = {
   'es/no-array-prototype-findlast-findlastindex': OFF,
   ...forbidES2024BuiltIns,
   ...forbidES2025BuiltIns,
+  ...forbidES2026BuiltIns,
   'es/no-intl-supportedvaluesof': ERROR,
   ...forbidES2023IntlBuiltIns,
   ...forbidES2025IntlBuiltIns,
@@ -2055,10 +2067,14 @@ const packageJSON = {
   'package-json/no-redundant-files': ERROR,
   // enforce that package dependencies are unique
   'package-json/unique-dependencies': ERROR,
-  // checks existence of local dependencies in the package.json
-  'package-json/valid-local-dependency': ERROR,
+  // enforce that the author field is a valid npm author specification
+  'package-json/valid-author': ERROR,
+  // enforce that the `bin` property is valid
+  'package-json/valid-bin': ERROR,
   // enforce that if repository directory is specified, it matches the path to the package.json file
   'package-json/valid-repository-directory': ERROR,
+  // enforce that the `type` property is valid
+  'package-json/valid-type': ERROR,
   // enforce that package versions are valid semver specifiers
   'package-json/valid-version': ERROR,
 };
@@ -2082,8 +2098,6 @@ const packagesPackageJSON = {
   'package-json/require-version': ERROR,
   // enforce that package names are valid npm package names
   'package-json/valid-name': ERROR,
-  // enforce that package.json has all properties required by the npm spec
-  'package-json/valid-package-def': ERROR,
 };
 
 const nodeDependencies = {
@@ -2131,11 +2145,7 @@ const markdown = {
 };
 
 const globalsESNext = {
-  AsyncDisposableStack: READONLY,
   AsyncIterator: READONLY,
-  DisposableStack: READONLY,
-  Observable: READONLY,
-  SuppressedError: READONLY,
   compositeKey: READONLY,
   compositeSymbol: READONLY,
 };
