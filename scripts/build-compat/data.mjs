@@ -68,7 +68,7 @@ for (const scope of [data, external]) {
     }
     map('FirefoxToFirefoxAndroid');
     map('SafariToIOS');
-    if (!has(module, 'ios') && has(module, 'safari') && semver(module.safari).major >= 15) {
+    if (!has(module, 'ios') && has(module, 'safari')) {
       module.ios = module.safari;
     }
     map('SafariToPhantom');
