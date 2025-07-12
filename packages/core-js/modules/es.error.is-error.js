@@ -12,6 +12,7 @@ var PROTOTYPE_SETTING_AVAILABLE = Object.setPrototypeOf || ({}).__proto__;
 
 var DOMException = getBuiltIn(DOM_EXCEPTION);
 var $Error = Error;
+// eslint-disable-next-line es/no-error-iserror -- safe
 var $isError = $Error.isError;
 
 var FORCED = !$isError || !PROTOTYPE_SETTING_AVAILABLE || fails(function () {
@@ -26,7 +27,7 @@ var FORCED = !$isError || !PROTOTYPE_SETTING_AVAILABLE || fails(function () {
 });
 
 // `Error.isError` method
-// https://github.com/tc39/proposal-is-error
+// https://tc39.es/ecma262/#sec-error.iserror
 $({ target: 'Error', stat: true, sham: true, forced: FORCED }, {
   isError: function isError(arg) {
     if (!isObject(arg)) return false;
